@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: CircularProgressIndicator(),
             )
           : SingleChildScrollView(
-              child: Column(
+              child: products.length>=3 ? Column(
                 children: [
                   ImageSlideshow(
                     /// Width of the [ImageSlideshow].
@@ -177,7 +177,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   ProductsGrid(false),
                 ],
-              ),
+              ) 
+              : ProductsGrid(false),
             ),
     );
   }
