@@ -69,29 +69,33 @@ class _OrderButtonState extends State<OrderButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      child: Text(
-        'ORDER',
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onPrimary,
-          fontSize: 18,
-        ),
-      ),
+      child: _isLoading
+          ? CircularProgressIndicator()
+          : Text(
+              'ORDER',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontSize: 18,
+              ),
+            ),
       style: ButtonStyle(
-          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(0)))),
-      onPressed: (widget.cart.totalAmount <= 0 || _isLoading) ? null : () async {
-        setState(() {
-          _isLoading = true;
-        });
-        await Provider.of<Orders>(context, listen: false).addOrder(
-          widget.cart.items.values.toList(),
-          widget.cart.totalAmount,
-        );
-        setState(() {
-          _isLoading = false;
-        });
-        widget.cart.clear();
-      },
+          shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)))),
+      onPressed: (widget.cart.totalAmount <= 0 || _isLoading)
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+              await Provider.of<Orders>(context, listen: false).addOrder(
+                widget.cart.items.values.toList(),
+                widget.cart.totalAmount,
+              );
+              await Provider.of<Cart>(context, listen: false).clear();
+              setState(() {
+                _isLoading = false;
+              });
+            },
     );
   }
 }

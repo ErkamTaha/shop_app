@@ -42,7 +42,7 @@ class Cart with ChangeNotifier {
     });
     return total;
   }
-  
+
   Future<void> fetchCartItems() async {
     final url = Uri.parse(
         'https://shop-f3683-default-rtdb.firebaseio.com/cart-items.json');
@@ -193,8 +193,20 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
-  void clear() {
+  /*void clear() {
     _items = {};
+    notifyListeners();
+  }*/
+
+  Future<void> clear() async {
+    final url = Uri.parse(
+        'https://shop-f3683-default-rtdb.firebaseio.com/cart-items.json');
+    try {
+      await http.delete(url);
+      _items.clear();
+    } catch (error) {
+      throw error;
+    }
     notifyListeners();
   }
 
