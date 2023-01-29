@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/providers/auth.dart';
 import 'package:flutter_complete_guide/screens/account_screen.dart';
+import 'package:flutter_complete_guide/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import './screens/cart_screen.dart';
@@ -30,53 +31,69 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: Auth(),
         ),
-        ChangeNotifierProvider.value(
-          value: Products(),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          update: (context, auth, previous) => Products(
+            auth.token,
+            auth.userId,
+            previous == null ? [] : previous.items,
+          ),
         ),
-        ChangeNotifierProvider.value(
-          value: Cart(),
+        ChangeNotifierProxyProvider<Auth, Cart>(
+          update: (context, auth, previous) => Cart(
+            auth.token,
+            previous == null ? {} : previous.items,
+          ),
         ),
-        ChangeNotifierProvider.value(
-          value: Orders(),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          update: (context, auth, previous) => Orders(
+            auth.token,
+            previous == null ? [] : previous.orders,
+          ),
         ),
         ChangeNotifierProvider.value(
           value: Catalogs(),
         ),
       ],
-      child: MaterialApp(
-          title: 'ShopHeaven',
-          theme: FlexThemeData.light(
-            scaffoldBackground: Colors.white,
-            scheme: FlexScheme.bigStone,
-            surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-            blendLevel: 9,
-            subThemesData: const FlexSubThemesData(
-              blendOnLevel: 10,
-              blendOnColors: false,
-              textButtonSchemeColor: SchemeColor.secondary,
-              elevatedButtonSchemeColor: SchemeColor.secondary,
-              outlinedButtonSchemeColor: SchemeColor.secondary,
-              bottomNavigationBarSelectedLabelSchemeColor:
-                  SchemeColor.secondary,
-              bottomNavigationBarSelectedIconSchemeColor: SchemeColor.secondary,
+      child: Consumer<Auth>(
+        builder: (context, auth, _) => MaterialApp(
+            title: 'ShopHeaven',
+            theme: FlexThemeData.light(
+              scaffoldBackground: Colors.white,
+              scheme: FlexScheme.bigStone,
+              surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+              blendLevel: 9,
+              subThemesData: const FlexSubThemesData(
+                blendOnLevel: 10,
+                blendOnColors: false,
+                textButtonSchemeColor: SchemeColor.secondary,
+                elevatedButtonSchemeColor: SchemeColor.secondary,
+                outlinedButtonSchemeColor: SchemeColor.secondary,
+                bottomNavigationBarSelectedLabelSchemeColor:
+                    SchemeColor.secondary,
+                bottomNavigationBarSelectedIconSchemeColor:
+                    SchemeColor.secondary,
+              ),
+              visualDensity: FlexColorScheme.comfortablePlatformDensity,
+              fontFamily: GoogleFonts.notoSans().fontFamily,
             ),
-            visualDensity: FlexColorScheme.comfortablePlatformDensity,
-            fontFamily: GoogleFonts.notoSans().fontFamily,
-          ),
-          themeMode: ThemeMode.system,
-          home: AuthScreen(),
-          routes: {
-            ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
-            CartScreen.routeName: (ctx) => CartScreen(),
-            OrdersScreen.routeName: (ctx) => OrdersScreen(),
-            UserProductsScreen.routeName: (cxt) => UserProductsScreen(),
-            EditProductScreen.routeName: (cxt) => EditProductScreen(),
-            AccountScreen.routeName: (ctx) => AccountScreen(),
-            CategoriesScreen.routeName: (ctx) => CategoriesScreen(),
-            ProductInCategoryScreen.routeName: (ctx) =>
-                ProductInCategoryScreen(),
-            SearchResultScreen.routeName: (ctx) => SearchResultScreen(),
-          }),
+            themeMode: ThemeMode.system,
+            home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+            routes: {
+              HomeScreen.routeName: (ctx) => HomeScreen(),
+              ProductsOverviewScreen.routeName: (ctx) =>
+                  ProductsOverviewScreen(),
+              ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+              CartScreen.routeName: (ctx) => CartScreen(),
+              OrdersScreen.routeName: (ctx) => OrdersScreen(),
+              UserProductsScreen.routeName: (cxt) => UserProductsScreen(),
+              EditProductScreen.routeName: (cxt) => EditProductScreen(),
+              AccountScreen.routeName: (ctx) => AccountScreen(),
+              CategoriesScreen.routeName: (ctx) => CategoriesScreen(),
+              ProductInCategoryScreen.routeName: (ctx) =>
+                  ProductInCategoryScreen(),
+              SearchResultScreen.routeName: (ctx) => SearchResultScreen(),
+            }),
+      ),
     );
   }
 }

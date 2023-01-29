@@ -5,11 +5,13 @@ import '../providers/products.dart';
 import '../screens/product_detail_screen.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
+import '../providers/auth.dart';
 
 class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
     final snackBar = SnackBar(
       content: Text('Added to cart.'),
@@ -35,7 +37,7 @@ class ProductItem extends StatelessWidget {
                   : Theme.of(context).colorScheme.outline,
               onPressed: () async {
                 try {
-                  product.toggleFavoriteStatus();
+                  product.toggleFavoriteStatus(authData.token, authData.userId);
                   await Provider.of<Products>(context, listen: false)
                       .updateProduct(product.id, product);
                 } catch (error) {

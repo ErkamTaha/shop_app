@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart.dart';
 import '../providers/products.dart';
+import '../providers/auth.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   static const routeName = '/product-detail';
@@ -9,6 +10,7 @@ class ProductDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productId = ModalRoute.of(context).settings.arguments as String;
+    final authData = Provider.of<Auth>(context, listen: false);
     final loadedProduct = Provider.of<Products>(
       context,
     ).findById(productId);
@@ -61,7 +63,7 @@ class ProductDetailScreen extends StatelessWidget {
                       : Theme.of(context).colorScheme.outline,
                   onPressed: () async {
                     try {
-                      loadedProduct.toggleFavoriteStatus();
+                      loadedProduct.toggleFavoriteStatus(authData.token, authData.userId);
                       await Provider.of<Products>(context, listen: false)
                           .updateProduct(loadedProduct.id, loadedProduct);
                     } catch (error) {

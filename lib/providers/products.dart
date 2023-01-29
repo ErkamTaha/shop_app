@@ -10,6 +10,14 @@ class Products with ChangeNotifier {
     return [..._items];
   }
 
+  final String authToken;
+  final String userId;
+  Products(
+    this.authToken,
+    this.userId,
+    this._items,
+  );
+
   List<Product> categoryItems(String category) {
     return _items.where((prodItem) => prodItem.categoryId == category).toList();
   }
@@ -29,30 +37,36 @@ class Products with ChangeNotifier {
     return _items.firstWhere((prod) => prod.id == id);
   }
 
-  Future<void> fetchProducts() async {
-    final url = Uri.parse(
-        'https://shop-f3683-default-rtdb.firebaseio.com/products.json');
+  Future<void> fetchProducts([bool filterByUser = false]) async {
+    final filterString = filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
+    var url = Uri.parse(
+        'https://shop-f3683-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filterString');
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      final List<Product> loadedProducts = [];
-      if (extractedData != null) {
-        extractedData.forEach((productId, productData) {
-          loadedProducts.add(
-            Product(
-              id: productId,
-              title: productData['title'],
-              description: productData['description'],
-              price: productData['price'],
-              imageUrl: productData['imageUrl'],
-              isFavorite: productData['isFavorite'],
-              categoryId: productData['categoryId'],
-            ),
-          );
-        });
-        _items = loadedProducts;
-        notifyListeners();
+      if (extractedData == null) {
+        return;
       }
+      url = Uri.parse(
+          'https://shop-f3683-default-rtdb.firebaseio.com/userFavorites/$userId.json?auth=$authToken');
+      final favoriteResponse = await http.get(url);
+      final favoriteData = jsonDecode(favoriteResponse.body);
+      final List<Product> loadedProducts = [];
+      extractedData.forEach((productId, productData) {
+        loadedProducts.add(
+          Product(
+            id: productId,
+            title: productData['title'],
+            description: productData['description'],
+            price: productData['price'],
+            imageUrl: productData['imageUrl'],
+            isFavorite: favoriteData == null ? false : favoriteData[productId] ?? false,
+            categoryId: productData['categoryId'],
+          ),
+        );
+      });
+      _items = loadedProducts;
+      notifyListeners();
     } catch (error) {
       throw (error);
     }
@@ -60,7 +74,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     final url = Uri.parse(
-        'https://shop-f3683-default-rtdb.firebaseio.com/products.json');
+        'https://shop-f3683-default-rtdb.firebaseio.com/products.json?auth=$authToken');
     try {
       final response = await http.post(
         url,
@@ -69,8 +83,8 @@ class Products with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
-          'isFavorite': product.isFavorite,
           'categoryId': product.categoryId,
+          'creatorId': userId,
         }),
       );
       final newProduct = Product(
@@ -93,7 +107,7 @@ class Products with ChangeNotifier {
     final productIndex = _items.indexWhere((element) => element.id == id);
     if (productIndex >= 0) {
       final url = Uri.parse(
-          'https://shop-f3683-default-rtdb.firebaseio.com/products/$id.json');
+          'https://shop-f3683-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken');
       await http.patch(url,
           body: json.encode({
             'title': newProduct.title,
@@ -110,7 +124,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final url = Uri.parse(
-        'https://shop-f3683-default-rtdb.firebaseio.com/products/$id.json');
+        'https://shop-f3683-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken');
     final existingProductIndex =
         _items.indexWhere((element) => element.id == id);
     var existingProduct = _items[existingProductIndex];

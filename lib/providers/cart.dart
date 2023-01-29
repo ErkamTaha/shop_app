@@ -25,6 +25,8 @@ class CartItem {
 }
 
 class Cart with ChangeNotifier {
+  final String authToken;
+  Cart(this.authToken, this._items);
   Map<String, CartItem> _items = {};
 
   Map<String, CartItem> get items {
@@ -45,7 +47,7 @@ class Cart with ChangeNotifier {
 
   Future<void> fetchCartItems() async {
     final url = Uri.parse(
-        'https://shop-f3683-default-rtdb.firebaseio.com/cart-items.json');
+        'https://shop-f3683-default-rtdb.firebaseio.com/cart-items.json?auth=$authToken');
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -72,7 +74,7 @@ class Cart with ChangeNotifier {
 
   Future<void> increaseQuantity(id, productId) async {
     final url = Uri.parse(
-        'https://shop-f3683-default-rtdb.firebaseio.com/cart-items/$id.json');
+        'https://shop-f3683-default-rtdb.firebaseio.com/cart-items/$id.json?auth=$authToken');
     try {
       await http.patch(
         url,
@@ -99,7 +101,7 @@ class Cart with ChangeNotifier {
 
   Future<void> addNewItem(productId, title, price, imageUrl) async {
     final url = Uri.parse(
-        'https://shop-f3683-default-rtdb.firebaseio.com/cart-items.json');
+        'https://shop-f3683-default-rtdb.firebaseio.com/cart-items.json?auth=$authToken');
     try {
       final response = await http.post(
         url,
@@ -130,7 +132,7 @@ class Cart with ChangeNotifier {
 
   Future<void> decreaseQuantity(id, productId) async {
     final url = Uri.parse(
-        'https://shop-f3683-default-rtdb.firebaseio.com/cart-items/$id.json');
+        'https://shop-f3683-default-rtdb.firebaseio.com/cart-items/$id.json?auth=$authToken');
     try {
       await http.patch(
         url,
@@ -157,7 +159,7 @@ class Cart with ChangeNotifier {
 
   Future<void> removeItem(id, productId) async {
     final url = Uri.parse(
-        'https://shop-f3683-default-rtdb.firebaseio.com/cart-items/$id.json');
+        'https://shop-f3683-default-rtdb.firebaseio.com/cart-items/$id.json?auth=$authToken');
     try {
       await http.delete(url);
     } catch (error) {
@@ -200,7 +202,7 @@ class Cart with ChangeNotifier {
 
   Future<void> clear() async {
     final url = Uri.parse(
-        'https://shop-f3683-default-rtdb.firebaseio.com/cart-items.json');
+        'https://shop-f3683-default-rtdb.firebaseio.com/cart-items.json?auth=$authToken');
     try {
       await http.delete(url);
       _items.clear();

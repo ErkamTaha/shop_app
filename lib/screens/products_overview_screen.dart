@@ -12,13 +12,12 @@ import 'favorites_screen.dart';
 import 'home_screen.dart';
 
 class ProductsOverviewScreen extends StatefulWidget {
+  static const routeName = '/overview';
   @override
   _ProductsOverviewScreenState createState() => _ProductsOverviewScreenState();
 }
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
-  var _isInit = true;
-  var _isLoading = false;
   int _selectedIndex = 0;
   final _buildBody = [
     HomeScreen(),
@@ -31,23 +30,6 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     setState(() {
       _selectedIndex = index;
     });
-  }
-
-  @override
-  void didChangeDependencies() {
-    if (_isInit) {
-      setState(() {
-        _isLoading = true;
-      });
-      Provider.of<Cart>(context).fetchCartItems();
-      Provider.of<Products>(context).fetchProducts().then(((value) {
-        setState(() {
-          _isLoading = false;
-        });
-      }));
-    }
-    _isInit = false;
-    super.didChangeDependencies();
   }
 
   @override
@@ -75,11 +57,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : IndexedStack(
+      body: IndexedStack(
               index: _selectedIndex,
               children: _buildBody,
             ),
