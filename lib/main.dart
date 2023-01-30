@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/providers/auth.dart';
-import 'package:flutter_complete_guide/screens/account_screen.dart';
-import 'package:flutter_complete_guide/screens/home_screen.dart';
+import './screens/account_screen.dart';
+import './screens/home_screen.dart';
+import './screens/loading_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import './screens/cart_screen.dart';
@@ -47,6 +47,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider<Auth, Orders>(
           update: (context, auth, previous) => Orders(
             auth.token,
+            auth.userId,
             previous == null ? [] : previous.orders,
           ),
         ),
@@ -77,7 +78,15 @@ class MyApp extends StatelessWidget {
               fontFamily: GoogleFonts.notoSans().fontFamily,
             ),
             themeMode: ThemeMode.system,
-            home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+            home: auth.isAuth
+                ? ProductsOverviewScreen()
+                : FutureBuilder(
+                    future: auth.tryAutoLogin(),
+                    builder: (context, snapshot) =>
+                        snapshot.connectionState == ConnectionState.waiting
+                            ? LoadingScreen()
+                            : AuthScreen(),
+                  ),
             routes: {
               HomeScreen.routeName: (ctx) => HomeScreen(),
               ProductsOverviewScreen.routeName: (ctx) =>
