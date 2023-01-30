@@ -81,7 +81,7 @@ class AuthCard extends StatefulWidget {
   _AuthCardState createState() => _AuthCardState();
 }
 
-class _AuthCardState extends State<AuthCard> {
+class _AuthCardState extends State<AuthCard> with TickerProviderStateMixin {
   final _emailFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
   final _confirmPasswordFocusNode = FocusNode();
@@ -95,6 +95,30 @@ class _AuthCardState extends State<AuthCard> {
   var _errorOccured = false;
   var _errorMessage = '';
   final _passwordController = TextEditingController();
+  AnimationController _controller;
+  Animation<Offset> _slideAnimation;
+  Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        vsync: this,
+        duration: Duration(
+          milliseconds: 300,
+        ));
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(0, -1.5),
+      end: Offset(0, 0),
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInCubic));
+    _slideAnimation.addListener((() => setState(
+          () {},
+        )));
+    _fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    ));
+  }
 
   void errorOccured(String message) {
     setState(() {
@@ -105,10 +129,11 @@ class _AuthCardState extends State<AuthCard> {
 
   @override
   void dispose() {
+    super.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     _confirmPasswordFocusNode.dispose();
-    super.dispose();
+    _controller.dispose();
   }
 
   Future<void> _submit() async {
@@ -160,10 +185,12 @@ class _AuthCardState extends State<AuthCard> {
       setState(() {
         _authMode = AuthMode.Signup;
       });
+      _controller.forward();
     } else {
       setState(() {
         _authMode = AuthMode.Login;
       });
+      _controller.reverse();
     }
   }
 
@@ -175,10 +202,10 @@ class _AuthCardState extends State<AuthCard> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 8.0,
-      child: Container(
-        height: _authMode == AuthMode.Signup ? 520 : 360,
-        constraints:
-            BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 520 : 360),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+        height: _authMode == AuthMode.Signup ? 440 : 380,
         width: deviceSize.width * 0.75,
         padding: EdgeInsets.all(16.0),
         child: Form(
@@ -231,28 +258,40 @@ class _AuthCardState extends State<AuthCard> {
                     _authData['password'] = value;
                   },
                 ),
-                if (_authMode == AuthMode.Signup)
-                  SizedBox(
-                    height: 20,
-                  ),
-                if (_authMode == AuthMode.Signup)
-                  TextFormField(
-                    enabled: _authMode == AuthMode.Signup,
-                    focusNode: _confirmPasswordFocusNode,
-                    decoration: InputDecoration(labelText: 'Confirm Password'),
-                    obscureText: true,
-                    validator: _authMode == AuthMode.Signup
-                        ? (value) {
-                            if (value != _passwordController.text) {
-                              return 'Passwords do not match!';
-                            } else {
-                              return null;
-                            }
-                          }
-                        : null,
-                  ),
                 SizedBox(
                   height: 20,
+                ),
+                AnimatedContainer(
+                  height: _authMode == AuthMode.Signup ? 80 : 30,
+                  curve: Curves.easeIn,
+                  duration: Duration(milliseconds: 300),
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: TextFormField(
+                      enabled: _authMode == AuthMode.Signup,
+                      focusNode: _confirmPasswordFocusNode,
+                      decoration:
+                          InputDecoration(labelText: 'Confirm Password'),
+                      obscureText: true,
+                      validator: _authMode == AuthMode.Signup
+                          ? (value) {
+                              if (value != _passwordController.text) {
+                                return 'Passwords do not match!';
+                              } else {
+                                return null;
+                              }
+                            }
+                          : null,
+                    ),
+                  ),
+                ),
+                AnimatedContainer(
+                  duration: Duration(milliseconds: 300),
+                  height: _authMode == AuthMode.Signup ? 30 : 20,
+                  curve: Curves.easeIn,
+                  child: SizedBox(
+                    height: 30,
+                  ),
                 ),
                 if (_isLoading)
                   CircularProgressIndicator()
@@ -275,14 +314,18 @@ class _AuthCardState extends State<AuthCard> {
                     FocusScope.of(context).unfocus();
                   },
                 ),
-                if (_errorOccured &&
-                    _emailFocusNode.hasFocus == false &&
+                if (_emailFocusNode.hasFocus == false &&
                     _passwordFocusNode.hasFocus == false &&
                     _confirmPasswordFocusNode.hasFocus == false)
-                  Text(
-                    _errorMessage,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error),
+                  AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    height: _errorOccured == true ? 20 : 0,
+                    curve: Curves.easeIn,
+                    child: Text(
+                      _errorMessage,
+                      style:
+                          TextStyle(color: Theme.of(context).colorScheme.error),
+                    ),
                   ),
               ],
             ),
