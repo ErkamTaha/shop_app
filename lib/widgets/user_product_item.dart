@@ -22,28 +22,46 @@ class UserProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 4,
-      ),
+      margin: EdgeInsets.all(4),
       child: Padding(
         padding: EdgeInsets.all(8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  title,
-                  textAlign: TextAlign.left,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding: EdgeInsets.all(4),
+                color: Colors.white,
+                width: 100,
+                height: 100,
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
                 ),
-                Text(
-                  '\$${(price)}',
-                  textAlign: TextAlign.left,
-                ),
-              ],
+              ),
+            ),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    height: 70,
+                    width: 180,
+                    child: Text(
+                      title,
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.fade,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Text(
+                    '\$${(price)}',
+                    textAlign: TextAlign.left,
+                  ),
+                ],
+              ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,

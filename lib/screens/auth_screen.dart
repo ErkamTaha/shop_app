@@ -298,7 +298,7 @@ class _AuthCardState extends State<AuthCard> with TickerProviderStateMixin {
                 else
                   ElevatedButton(
                     child:
-                        Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
+                        Text(_authMode == AuthMode.Login ? 'Log In' : 'Sign Up'),
                     onPressed: () {
                       _errorOccured = false;
                       _submit();
@@ -307,7 +307,7 @@ class _AuthCardState extends State<AuthCard> with TickerProviderStateMixin {
                   ),
                 TextButton(
                   child: Text(
-                      '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
+                      '${_authMode == AuthMode.Login ? 'Sign Up' : 'Log In'} Instead'),
                   onPressed: () {
                     _errorOccured = false;
                     _switchAuthMode();

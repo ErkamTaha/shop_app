@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/screens/account_screen.dart';
 import 'package:provider/provider.dart';
 import '../models/CustomSearchDelegate.dart';
+import '../widgets/navigation_bar.dart';
 import '../widgets/products_grid.dart';
 import '../widgets/badge.dart';
 import '../providers/cart.dart';
@@ -57,22 +58,27 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ),
         ],
       ),
-      body: IndexedStack(
-              index: _selectedIndex,
-              children: _buildBody,
-            ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.apps), label: 'Categories'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: 'Cart'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.favorite), label: 'Favorites'),
+      body: Column(
+        children: [
+          IndexedStack(
+            index: _selectedIndex,
+            children: _buildBody,
+          ),
+          BottomNavBarFb1(),
         ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
       ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   items: [
+      //     BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
+      //     BottomNavigationBarItem(icon: Icon(Icons.apps), label: 'Categories'),
+      //     BottomNavigationBarItem(
+      //         icon: Icon(Icons.shopping_cart), label: 'Cart'),
+      //     BottomNavigationBarItem(
+      //         icon: Icon(Icons.favorite), label: 'Favorites'),
+      //   ],
+      //   currentIndex: _selectedIndex,
+      //   onTap: _onItemTapped,
+      // ),
     );
   }
 }

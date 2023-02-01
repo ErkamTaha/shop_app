@@ -46,23 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? Column(
                       children: [
                         ImageSlideshow(
-                          /// Width of the [ImageSlideshow].
                           width: double.infinity,
-
-                          /// Height of the [ImageSlideshow].
                           height: 300,
-
-                          /// The page to show when first creating the [ImageSlideshow].
                           initialPage: 0,
-
-                          /// The color to paint the indicator.
-                          indicatorColor: Colors.blue,
-
-                          /// The color to paint behind th indicator.
+                          indicatorColor: Theme.of(context).colorScheme.secondary,
                           indicatorBackgroundColor: Colors.grey,
-
-                          /// The widgets to display in the [ImageSlideshow].
-                          /// Add the sample image file into the images folder
                           children: [
                             GridTile(
                               footer: Container(
@@ -82,18 +70,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               ),
-                              child: ChangeNotifierProvider.value(
-                                value: products[0],
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).pushNamed(
-                                      ProductDetailScreen.routeName,
-                                      arguments: products[0].id,
-                                    );
-                                  },
-                                  child: Image.network(
-                                    products[0].imageUrl,
-                                    fit: BoxFit.scaleDown,
+                              child: Padding(
+                                padding: EdgeInsets.all(64),
+                                child: ChangeNotifierProvider.value(
+                                  value: products[0],
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).pushNamed(
+                                        ProductDetailScreen.routeName,
+                                        arguments: products[0].id,
+                                      );
+                                    },
+                                    child: Image.network(
+                                      products[0].imageUrl,
+                                      fit: BoxFit.scaleDown,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -116,18 +107,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               ),
-                              child: ChangeNotifierProvider.value(
-                                value: products[1],
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).pushNamed(
-                                      ProductDetailScreen.routeName,
-                                      arguments: products[1].id,
-                                    );
-                                  },
-                                  child: Image.network(
-                                    products[1].imageUrl,
-                                    fit: BoxFit.scaleDown,
+                              child: Padding(
+                                padding: EdgeInsets.all(64),
+                                child: ChangeNotifierProvider.value(
+                                  value: products[1],
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).pushNamed(
+                                        ProductDetailScreen.routeName,
+                                        arguments: products[1].id,
+                                      );
+                                    },
+                                    child: Image.network(
+                                      products[1].imageUrl,
+                                      fit: BoxFit.scaleDown,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -150,34 +144,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               ),
-                              child: ChangeNotifierProvider.value(
-                                value: products[2],
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).pushNamed(
-                                      ProductDetailScreen.routeName,
-                                      arguments: products[2].id,
-                                    );
-                                  },
-                                  child: Image.network(
-                                    products[2].imageUrl,
-                                    fit: BoxFit.scaleDown,
+                              child: Padding(
+                                padding: EdgeInsets.all(64),
+                                child: ChangeNotifierProvider.value(
+                                  value: products[2],
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).pushNamed(
+                                        ProductDetailScreen.routeName,
+                                        arguments: products[2].id,
+                                      );
+                                    },
+                                    child: Image.network(
+                                      products[2].imageUrl,
+                                      fit: BoxFit.scaleDown,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ],
-
-                          /// Called whenever the page in the center of the viewport changes.
                           onPageChanged: (value) {
-                            //print('Page changed: $value');
                           },
-
-                          /// Auto scroll interval.
-                          /// Do not auto scroll with null or 0.
-                          autoPlayInterval: 3000,
-
-                          /// Loops back to first slide.
+                          autoPlayInterval: 4000,
                           isLoop: true,
                         ),
                         SizedBox(

@@ -72,7 +72,7 @@ class _OrderButtonState extends State<OrderButton> {
       child: _isLoading
           ? CircularProgressIndicator()
           : Text(
-              'ORDER',
+              'Order',
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onPrimary,
                 fontSize: 18,

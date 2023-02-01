@@ -13,9 +13,23 @@ class ProductItem extends StatelessWidget {
     final product = Provider.of<Product>(context, listen: false);
     final authData = Provider.of<Auth>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
+    final String productTitle = product.title;
     final snackBar = SnackBar(
-      content: Text('Added to cart.'),
-      duration: Duration(seconds: 3),
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+              child: Text(
+            productTitle,
+            overflow: TextOverflow.ellipsis,
+          )),
+          Flexible(
+            child: Text('added to cart.'),
+          ),
+        ],
+      ),
+      duration: Duration(milliseconds: 800),
       action: SnackBarAction(
         label: 'Cancel',
         onPressed: () {
@@ -23,39 +37,12 @@ class ProductItem extends StatelessWidget {
         },
       ),
     );
-    return GridTile(
-      header: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Consumer<Product>(
-            builder: (ctx, product, _) => IconButton(
-              icon: Icon(
-                product.isFavorite ? Icons.favorite : Icons.favorite_border,
-              ),
-              color: product.isFavorite
-                  ? Theme.of(context).colorScheme.secondary
-                  : Theme.of(context).colorScheme.outline,
-              onPressed: () async {
-                try {
-                  product.toggleFavoriteStatus(authData.token, authData.userId);
-                  await Provider.of<Products>(context, listen: false)
-                      .updateProduct(product.id, product);
-                } catch (error) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Could not add to favorites.',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
-                }
-              },
-            ),
-          ),
-        ],
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black12, width: 1),
+        borderRadius: BorderRadius.circular(8),
       ),
-      child: Column(
+      child: Stack(
         children: [
           GestureDetector(
             onTap: () {
@@ -64,44 +51,91 @@ class ProductItem extends StatelessWidget {
                 arguments: product.id,
               );
             },
-            child: Image.network(
-              product.imageUrl,
-              fit: BoxFit.cover,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 30,),
+                Container(
+                  height: 160,
+                  width: 200,
+                  child: FadeInImage(
+                    placeholder:
+                        AssetImage('assets/images/product-placeholder.png'),
+                    image: NetworkImage(product.imageUrl),
+                    fit: BoxFit.scaleDown,
+                  ),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Flexible(
+                  flex: 2,
+                  child: Container(
+                    child: Text(
+                      productTitle.length > 70
+                          ? '${productTitle.substring(0, 70)}...'
+                          : productTitle,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.fade,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Flexible(
+                  child: Text(
+                    '\$${product.price.toString()}',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-      footer: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            product.title,
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Text(
-            '\$${product.price.toString()}',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          OutlinedButton(
-            child: Text(
-              'Add To Cart',
-              style: TextStyle(
-                color: Theme.of(context).primaryColor,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Consumer<Product>(
+                builder: (ctx, product, _) => IconButton(
+                  icon: Icon(
+                    product.isFavorite ? Icons.favorite : Icons.favorite_border,
+                  ),
+                  color: product.isFavorite
+                      ? Theme.of(context).colorScheme.secondary
+                      : Theme.of(context).colorScheme.outline,
+                  onPressed: () async {
+                    try {
+                      product.toggleFavoriteStatus(
+                          authData.token, authData.userId);
+                      await Provider.of<Products>(context, listen: false)
+                          .updateProduct(product.id, product);
+                    } catch (error) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Could not add to favorites.',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
-            ),
-            onPressed: () {
-              cart.addItem(
-                  product.id, product.price, product.title, product.imageUrl);
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            },
+              IconButton(
+                icon: Icon(Icons.add_shopping_cart_rounded),
+                color: Theme.of(context).colorScheme.secondary,
+                onPressed: () {
+                  cart.addItem(product.id, product.price, product.title,
+                      product.imageUrl);
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                },
+              ),
+            ],
           ),
         ],
       ),
