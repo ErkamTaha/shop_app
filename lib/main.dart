@@ -20,6 +20,7 @@ import 'screens/product_in_category_screen.dart';
 import 'screens/search_result_screen.dart';
 import 'screens/auth_screen.dart';
 import './providers/auth.dart';
+import './helpers/custom_route.dart';
 
 void main() => runApp(MyApp());
 
@@ -59,6 +60,10 @@ class MyApp extends StatelessWidget {
         builder: (context, auth, _) => MaterialApp(
             title: 'ShopHeaven',
             theme: FlexThemeData.light(
+              pageTransitionsTheme: PageTransitionsTheme(builders: {
+                TargetPlatform.android: CustomPageTransitionBuilder(),
+                TargetPlatform.iOS: CustomPageTransitionBuilder(),
+              },),
               scaffoldBackground: Colors.white,
               scheme: FlexScheme.bigStone,
               surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
